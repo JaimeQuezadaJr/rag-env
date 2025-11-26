@@ -1,80 +1,57 @@
 # scripts/ingest.py
+
 import os
-import fitz                      # PyMuPDF
-import pickle
-import numpy as np
-import faiss
-from sentence_transformers import SentenceTransformer
+import shutil
+from langchain_community.document_loaders import PyPDFLoader
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_community.vectorstores import FAISS
+from langchain_ollama import OllamaEmbeddings  # <- UPDATED IMPORT
 
-EMBED_MODEL_NAME = "all-MiniLM-L6-v2"  # small, fast, good baseline
+# Calculate project root
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-def load_pdf_paths(folder_path):
-    return [
-        os.path.join(folder_path, f)
-        for f in os.listdir(folder_path)
-        if f.lower().endswith(".pdf")
-    ]
+PDF_FOLDER = os.path.join(ROOT_DIR, "pdf_inputs")
+VECTORSTORE_FOLDER = os.path.join(ROOT_DIR, "vectorstore")
 
-def extract_text_from_pdf(pdf_path):
-    doc = fitz.open(pdf_path)
-    pages = []
-    for i in range(len(doc)):
-        page = doc.load_page(i)
-        text = page.get_text("text")
-        pages.append((i+1, text))
-    return pages
+def run_ingest():
+    print("\n🔄 Running ingestion...")
 
-def chunk_text(text, chunk_size=1000, overlap=200):
-    chunks = []
-    start = 0
-    text_len = len(text)
-    while start < text_len:
-        end = min(start + chunk_size, text_len)
-        chunk = text[start:end].strip()
-        if len(chunk) > 40:
-            chunks.append(chunk)
-        start += chunk_size - overlap
-    return chunks
+    pdf_files = [f for f in os.listdir(PDF_FOLDER) if f.endswith(".pdf")]
 
-def embed_texts(texts, model):
-    embs = model.encode(texts, show_progress_bar=True, convert_to_numpy=True)
-    return [np.array(e, dtype=np.float32) for e in embs]
+    if not pdf_files:
+        print("⚠️ No PDFs found in pdf_inputs/. Skipping.")
+        return
+    
+    all_documents = []
 
-def build_faiss_index(embeddings):
-    dim = embeddings[0].shape[0]
-    index = faiss.IndexFlatIP(dim)  # inner product with normalized vectors = cosine
-    embs = np.stack(embeddings)
-    norms = np.linalg.norm(embs, axis=1, keepdims=True)
-    embs = embs / (norms + 1e-10)
-    index.add(embs)
-    return index
+    # Load PDFs
+    for pdf in pdf_files:
+        pdf_path = os.path.join(PDF_FOLDER, pdf)
+        print(f"📄 Loading {pdf_path}")
+        loader = PyPDFLoader(pdf_path)
+        docs = loader.load()
+        all_documents.extend(docs)
 
-def ingest_all_pdfs(pdf_folder, index_path="faiss.index", meta_path="meta.pkl"):
-    pdf_paths = load_pdf_paths(pdf_folder)
-    docs = []  # list of dicts: {pdf, page, text}
-    for p in pdf_paths:
-        print("Processing:", p)
-        pages = extract_text_from_pdf(p)
-        for page_num, page_text in pages:
-            chunks = chunk_text(page_text)
-            for chunk in chunks:
-                docs.append({"pdf": os.path.basename(p), "page": page_num, "text": chunk})
+    # Split into chunks
+    print("✂️ Splitting documents...")
+    splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=80)
+    chunks = splitter.split_documents(all_documents)
 
-    print(f"Total chunks: {len(docs)}")
-    texts = [d["text"] for d in docs]
+    # Generate embeddings
+    print("🧠 Generating embeddings...")
+    embeddings = OllamaEmbeddings(model="all-MiniLM-L6-v2", n_jobs=1)  # <- UPDATED MODEL NAME
 
-    # embed
-    print("Loading embedding model:", EMBED_MODEL_NAME)
-    model = SentenceTransformer(EMBED_MODEL_NAME)
-    embeddings = embed_texts(texts, model)
-    print("Embeddings computed.")
+    # Remove old vectorstore
+    if os.path.exists(VECTORSTORE_FOLDER):
+        shutil.rmtree(VECTORSTORE_FOLDER)
 
-    # build FAISS
-    index = build_faiss_index(embeddings)
-    faiss.write_index(index, index_path)
-    with open(meta_path, "wb") as f:
-        pickle.dump(docs, f)
-    print("Index and metadata saved:", index_path, meta_path)
+    # Build FAISS vectorstore
+    vectorstore = FAISS.from_documents(chunks, embeddings)
+    vectorstore.save_local(VECTORSTORE_FOLDER)
+
+    print("✅ Ingestion complete! Vector store updated.\n")
+
 
 if __name__ == "__main__":
-    ingest_all_pdfs("../pdf_inputs", index_path="../faiss.index", meta_path="../meta.pkl")
+    run_ingest()
+

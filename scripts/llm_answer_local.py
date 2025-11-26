@@ -13,6 +13,7 @@ Your responses are:
 Speak in Tim Cook’s tone and mannerisms.
 """
 
+
 def build_prompt(question, retrieved_chunks):
     context = ""
     for r in retrieved_chunks:
@@ -33,16 +34,18 @@ If the answer isn't in the PDFs, say:
 "I'm not seeing that in the documentation."
 """
 
+
 def ollama_generate(model, prompt):
     process = subprocess.Popen(
         ["ollama", "run", model],
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
-        text=True
+        text=True,
     )
     out, err = process.communicate(prompt)
     return out
+
 
 def rag_answer(question, top_k=4, model="gemma3:4b"):
     index, meta = load_index_and_meta()
@@ -53,7 +56,7 @@ def rag_answer(question, top_k=4, model="gemma3:4b"):
 
     return answer
 
+
 if __name__ == "__main__":
     q = "Where was Jaime Quezada working in 2017?"
     print(rag_answer(q))
-

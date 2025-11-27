@@ -1,0 +1,23 @@
+# Backend Dependencies
+
+# API Framework
+fastapi==0.115.6
+uvicorn==0.32.1
+python-multipart==0.0.17
+
+# LangChain
+langchain==0.3.13
+langchain-community==0.3.13
+langchain-ollama==0.2.2
+langchain-text-splitters==0.3.4
+
+# Vector Store
+faiss-cpu==1.9.0
+
+# PDF Processing
+pypdf==5.1.0
+pymupdf==1.24.14
+
+# Note: Ollama must be installed separately
+# Install with: brew install ollama (on macOS)
+

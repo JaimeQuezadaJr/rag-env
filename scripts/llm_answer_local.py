@@ -1,3 +1,7 @@
+import os
+
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+
 import subprocess
 import json
 from query import load_index_and_meta, query_index
@@ -48,8 +52,8 @@ def ollama_generate(model, prompt):
 
 
 def rag_answer(question, top_k=4, model="gemma3:4b"):
-    index, meta = load_index_and_meta()
-    retrieved = query_index(question, index, meta, top_k=top_k)
+    vectorstore, _ = load_index_and_meta()
+    retrieved = query_index(question, vectorstore, top_k=top_k)
 
     prompt = build_prompt(question, retrieved)
     answer = ollama_generate(model, prompt)
@@ -58,5 +62,5 @@ def rag_answer(question, top_k=4, model="gemma3:4b"):
 
 
 if __name__ == "__main__":
-    q = "Where was Jaime Quezada working in 2017?"
+    q = "What is the arrowhead policy number?"
     print(rag_answer(q))

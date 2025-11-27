@@ -1,0 +1,18 @@
+# Core LangChain Dependencies
+langchain==0.3.13
+langchain-community==0.3.13
+langchain-ollama==0.2.2
+langchain-text-splitters==0.3.4
+
+# Vector Store
+faiss-cpu==1.9.0
+
+# PDF Processing (required by PyPDFLoader)
+pypdf==5.1.0
+
+# File Watching (required by watcher.py)
+watchdog==6.0.0
+
+# Note: Make sure Ollama is installed separately on your system
+# Install with: brew install ollama (on macOS)
+

@@ -1,6 +1,9 @@
 # scripts/ingest.py
 
 import os
+
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+
 import shutil
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -13,6 +16,7 @@ ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PDF_FOLDER = os.path.join(ROOT_DIR, "pdf_inputs")
 VECTORSTORE_FOLDER = os.path.join(ROOT_DIR, "vectorstore")
 
+
 def run_ingest():
     print("\n🔄 Running ingestion...")
 
@@ -21,7 +25,7 @@ def run_ingest():
     if not pdf_files:
         print("⚠️ No PDFs found in pdf_inputs/. Skipping.")
         return
-    
+
     all_documents = []
 
     # Load PDFs
@@ -39,7 +43,7 @@ def run_ingest():
 
     # Generate embeddings
     print("🧠 Generating embeddings...")
-    embeddings = OllamaEmbeddings(model="all-MiniLM-L6-v2", n_jobs=1)  # <- UPDATED MODEL NAME
+    embeddings = OllamaEmbeddings(model="nomic-embed-text")
 
     # Remove old vectorstore
     if os.path.exists(VECTORSTORE_FOLDER):
@@ -54,4 +58,3 @@ def run_ingest():
 
 if __name__ == "__main__":
     run_ingest()
-

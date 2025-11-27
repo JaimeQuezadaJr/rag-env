@@ -1,38 +1,48 @@
 # scripts/query.py
-import pickle
-import numpy as np
-import faiss
-from sentence_transformers import SentenceTransformer
+import os
 
-EMBED_MODEL_NAME = "all-MiniLM-L6-v2"
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
-def load_index_and_meta(index_path="../faiss.index", meta_path="../meta.pkl"):
-    index = faiss.read_index(index_path)
-    with open(meta_path, "rb") as f:
-        meta = pickle.load(f)
-    return index, meta
+from langchain_community.vectorstores import FAISS
+from langchain_ollama import OllamaEmbeddings
 
-def embed_query(query, model):
-    emb = model.encode([query], convert_to_numpy=True)[0].astype(np.float32)
-    emb = emb / (np.linalg.norm(emb) + 1e-10)
-    return emb
+# Calculate project root
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+VECTORSTORE_FOLDER = os.path.join(ROOT_DIR, "vectorstore")
 
-def query_index(query, index, meta, top_k=4):
-    model = SentenceTransformer(EMBED_MODEL_NAME)
-    q_emb = embed_query(query, model)
-    D, I = index.search(np.array([q_emb]), top_k)
-    results = []
-    for idx, score in zip(I[0], D[0]):
-        item = meta[idx].copy()
-        item["score"] = float(score)
-        results.append(item)
-    return results
+
+def load_index_and_meta():
+    """Load the FAISS vectorstore"""
+    embeddings = OllamaEmbeddings(model="nomic-embed-text")
+    vectorstore = FAISS.load_local(
+        VECTORSTORE_FOLDER, embeddings, allow_dangerous_deserialization=True
+    )
+    return vectorstore, None  # Return None for meta to keep compatible
+
+
+def query_index(query, vectorstore, meta=None, top_k=4):
+    """Query the vectorstore and return results"""
+    results = vectorstore.similarity_search_with_score(query, k=top_k)
+
+    formatted_results = []
+    for doc, score in results:
+        formatted_results.append(
+            {
+                "text": doc.page_content,
+                "pdf": doc.metadata.get("source", "unknown").split("/")[-1],
+                "page": doc.metadata.get("page", 0),
+                "score": float(score),
+            }
+        )
+
+    return formatted_results
+
 
 if __name__ == "__main__":
-    index, meta = load_index_and_meta()
-    question = "How do I tune a standard guitar string?"
-    results = query_index(question, index, meta, top_k=4)
+    vectorstore, _ = load_index_and_meta()
+    question = "Where did Rajiv Battula work in 2015?"
+    results = query_index(question, vectorstore, top_k=4)
     for i, r in enumerate(results):
         print(f"\n--- Result {i+1} (score {r['score']:.3f}) ---")
-        print("Source:", r["pdf"], "page:", r["page"])
+        print("Source:", r["pdf"], "| Page:", r["page"])
         print(r["text"][:800])  # show first 800 chars

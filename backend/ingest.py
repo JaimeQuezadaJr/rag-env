@@ -2,8 +2,6 @@
 
 import os
 
-os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
-
 import shutil
 from langchain_community.document_loaders import PyPDFLoader, PyMuPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -78,7 +76,7 @@ def run_ingest():
         "message": "Ingestion complete",
         "loaded": loaded_pdfs,
         "failed": failed_pdfs,
-        "chunks": len(chunks)
+        "chunks": len(chunks),
     }
 
 
@@ -92,4 +90,3 @@ def get_pdf_list():
 
 if __name__ == "__main__":
     run_ingest()
-

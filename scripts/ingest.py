@@ -5,7 +5,7 @@ import os
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 import shutil
-from langchain_community.document_loaders import PyPDFLoader
+from langchain_community.document_loaders import PyPDFLoader, PyMuPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain_ollama import OllamaEmbeddings  # <- UPDATED IMPORT
@@ -27,14 +27,39 @@ def run_ingest():
         return
 
     all_documents = []
+    failed_pdfs = []
 
     # Load PDFs
     for pdf in pdf_files:
         pdf_path = os.path.join(PDF_FOLDER, pdf)
-        print(f"📄 Loading {pdf_path}")
-        loader = PyPDFLoader(pdf_path)
-        docs = loader.load()
-        all_documents.extend(docs)
+        try:
+            print(f"📄 Loading {pdf_path}")
+            # Try PyPDFLoader first (faster)
+            try:
+                loader = PyPDFLoader(pdf_path)
+                docs = loader.load()
+            except Exception as e1:
+                # If PyPDFLoader fails, fall back to PyMuPDFLoader (more robust)
+                print(f"   ⚠️  PyPDFLoader failed, trying PyMuPDFLoader...")
+                loader = PyMuPDFLoader(pdf_path)
+                docs = loader.load()
+
+            all_documents.extend(docs)
+            print(f"   ✅ Successfully loaded {len(docs)} pages")
+        except Exception as e:
+            print(f"   ❌ Failed to load {pdf} with both loaders: {str(e)}")
+            failed_pdfs.append(pdf)
+            continue
+
+    if failed_pdfs:
+        print(f"\n⚠️  Warning: {len(failed_pdfs)} PDF(s) could not be loaded:")
+        for pdf in failed_pdfs:
+            print(f"   - {pdf}")
+        print("   Continuing with successfully loaded PDFs...\n")
+
+    if not all_documents:
+        print("❌ No documents were successfully loaded. Cannot create vectorstore.")
+        return
 
     # Split into chunks
     print("✂️ Splitting documents...")

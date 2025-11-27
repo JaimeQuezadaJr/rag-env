@@ -14,7 +14,8 @@ WATCH_PATH = os.path.join(ROOT_DIR, "pdf_inputs")
 
 class PDFWatcher(FileSystemEventHandler):
     def on_any_event(self, event):
-        if not event.is_directory:
+        # Only process PDF files and relevant events (created, deleted, modified, moved)
+        if not event.is_directory and event.src_path.lower().endswith('.pdf'):
             print(f"\n📢 Change detected: {event.event_type} — {event.src_path}")
             run_ingest()
 

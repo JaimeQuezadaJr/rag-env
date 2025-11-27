@@ -62,5 +62,5 @@ def rag_answer(question, top_k=4, model="gemma3:4b"):
 
 
 if __name__ == "__main__":
-    q = "What is the arrowhead policy number?"
+    q = "What are the two components of the physical test battery?"
     print(rag_answer(q))

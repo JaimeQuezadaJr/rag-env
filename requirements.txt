@@ -7,8 +7,9 @@ langchain-text-splitters==0.3.4
 # Vector Store
 faiss-cpu==1.9.0
 
-# PDF Processing (required by PyPDFLoader)
-pypdf==5.1.0
+# PDF Processing
+pypdf==5.1.0  # Primary loader (faster)
+pymupdf==1.24.14  # Fallback loader (more robust, handles complex PDFs)
 
 # File Watching (required by watcher.py)
 watchdog==6.0.0

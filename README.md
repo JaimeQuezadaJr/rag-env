@@ -44,8 +44,6 @@ ollama pull nomic-embed-text
 
 # Chat model (choose one)
 ollama pull gemma3:4b
-# or
-ollama pull llama3.2
 ```
 
 ## Setup

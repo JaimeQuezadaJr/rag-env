@@ -18,7 +18,9 @@ def build_prompt(question: str, context_chunks: list) -> str:
     """Build the prompt with context and question"""
     context = ""
     for chunk in context_chunks:
-        context += f"\n[Source: {chunk['pdf']} | Page {chunk['page']}]\n{chunk['text']}\n"
+        context += (
+            f"\n[Source: {chunk['pdf']} | Page {chunk['page']}]\n{chunk['text']}\n"
+        )
 
     return f"""CONTEXT FROM DOCUMENTS:
 {context}
@@ -46,28 +48,30 @@ def chat(question: str, model: str = "gemma3:4b", top_k: int = 4) -> dict:
     """Main chat function - retrieves context and generates response"""
     # Retrieve relevant chunks
     chunks = query_documents(question, top_k=top_k)
-    
+
     if not chunks:
         return {
             "answer": "No documents have been uploaded yet. Please upload some PDFs first.",
-            "sources": []
+            "sources": [],
         }
-    
+
     # Build prompt and generate response
     prompt = build_prompt(question, chunks)
     answer = generate_response(prompt, model)
-    
-    # Format sources
-    sources = [{"pdf": c["pdf"], "page": c["page"]} for c in chunks]
-    
-    return {
-        "answer": answer,
-        "sources": sources
-    }
+
+    # Format sources - deduplicate by (pdf, page) combination
+    seen = set()
+    sources = []
+    for c in chunks:
+        source_key = (c["pdf"], c["page"])
+        if source_key not in seen:
+            seen.add(source_key)
+            sources.append({"pdf": c["pdf"], "page": c["page"]})
+
+    return {"answer": answer, "sources": sources}
 
 
 if __name__ == "__main__":
     response = chat("Where did Rajiv Battula work in 2015?")
     print(response["answer"])
     print("\nSources:", response["sources"])
-

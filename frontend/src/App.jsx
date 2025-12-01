@@ -11,6 +11,7 @@ import {
   CheckCircle2,
   AlertCircle
 } from 'lucide-react'
+import MarkdownMessage from './MarkdownMessage.jsx'
 
 // Use /api prefix in production (proxied by nginx), direct URL in development
 const API_BASE = import.meta.env.VITE_API_BASE || 
@@ -349,9 +350,10 @@ function App() {
                         : 'bg-ink-900/50 border border-ink-800/50 rounded-2xl rounded-bl-md px-5 py-4'
                     }`}
                   >
-                    <div className={message.role === 'user' ? '' : 'prose-chat'}>
-                      {message.content}
-                    </div>
+                    <MarkdownMessage 
+                      content={message.content} 
+                      isUser={message.role === 'user'} 
+                    />
                     
                     {message.sources && message.sources.length > 0 && (
                       <div className="mt-3 pt-3 border-t border-ink-700/50">

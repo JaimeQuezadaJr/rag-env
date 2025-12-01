@@ -12,7 +12,9 @@ import {
   AlertCircle
 } from 'lucide-react'
 
-const API_BASE = 'http://localhost:8000'
+// Use /api prefix in production (proxied by nginx), direct URL in development
+const API_BASE = import.meta.env.VITE_API_BASE || 
+  (import.meta.env.PROD ? '/api' : 'http://localhost:8000')
 
 function App() {
   const [pdfs, setPdfs] = useState([])

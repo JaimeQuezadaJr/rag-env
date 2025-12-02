@@ -11,11 +11,15 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first for better caching
-COPY requirements.txt .
+COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy backend code
-COPY . .
+COPY backend/ .
+
+# Copy entrypoint script
+COPY docker-entrypoint.sh /app/docker-entrypoint.sh
+RUN chmod +x /app/docker-entrypoint.sh
 
 # Create necessary directories
 RUN mkdir -p /app/pdf_inputs /app/vectorstore
@@ -23,6 +27,6 @@ RUN mkdir -p /app/pdf_inputs /app/vectorstore
 # Expose port
 EXPOSE 8000
 
-# Run the application
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+# Run the application with entrypoint
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
 

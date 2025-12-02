@@ -61,20 +61,16 @@ docker-compose down -v
 
 ## Important Notes
 
-### Ollama Requirement
+### Ollama Service
 
-**The backend requires Ollama to be running on your host machine.** Docker containers cannot directly access Ollama running on your host by default.
+**Ollama is included as a Docker service** - you don't need to install it on your host machine!
 
-**Options:**
+The setup includes:
+- **Ollama container** - Automatically runs Ollama in Docker
+- **Auto-download models** - Required models (`nomic-embed-text` and `gemma3:4b`) are automatically pulled on first startup
+- **Persistent storage** - Models are stored in a Docker volume and persist between restarts
 
-1. **Run Ollama on host** (recommended for development):
-   - Install Ollama on your machine
-   - Pull required models: `ollama pull nomic-embed-text` and `ollama pull gemma3:4b`
-   - The backend will connect to Ollama on `localhost:11434`
-
-2. **Run Ollama in Docker** (for production):
-   - Add Ollama service to `docker-compose.yml`
-   - Update backend to use `ollama:11434` instead of `localhost:11434`
+**First startup may take longer** as it downloads the models (several GB). Subsequent startups will be faster.
 
 ### Persistent Data
 

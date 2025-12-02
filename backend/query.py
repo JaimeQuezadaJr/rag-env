@@ -5,6 +5,9 @@ import os
 from langchain_community.vectorstores import FAISS
 from langchain_ollama import OllamaEmbeddings
 
+# Get Ollama host from environment (for Docker) or use default
+OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://localhost:11434")
+
 # Calculate project root
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 VECTORSTORE_FOLDER = os.path.join(ROOT_DIR, "vectorstore")
@@ -15,7 +18,10 @@ def load_vectorstore():
     if not os.path.exists(VECTORSTORE_FOLDER):
         return None
 
-    embeddings = OllamaEmbeddings(model="nomic-embed-text")
+    embeddings = OllamaEmbeddings(
+        model="nomic-embed-text",
+        base_url=OLLAMA_HOST if OLLAMA_HOST.startswith("http") else f"http://{OLLAMA_HOST}"
+    )
     vectorstore = FAISS.load_local(
         VECTORSTORE_FOLDER, embeddings, allow_dangerous_deserialization=True
     )

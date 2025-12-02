@@ -1,10 +1,24 @@
 version: '3.8'
 
 services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: rag-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
   backend:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./backend/Dockerfile
     container_name: rag-backend
     ports:
       - "8000:8000"
@@ -14,6 +28,9 @@ services:
       - ./vectorstore:/app/vectorstore
     environment:
       - PYTHONUNBUFFERED=1
+      - OLLAMA_HOST=http://ollama:11434
+    depends_on:
+      - ollama
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/"]
@@ -30,6 +47,7 @@ services:
       - "3000:80"
     depends_on:
       - backend
+      - ollama
     environment:
       - VITE_API_BASE=/api
     restart: unless-stopped
@@ -42,4 +60,5 @@ services:
 volumes:
   pdf_inputs:
   vectorstore:
+  ollama_data:
 

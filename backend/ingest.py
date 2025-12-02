@@ -8,6 +8,9 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain_ollama import OllamaEmbeddings
 
+# Get Ollama host from environment (for Docker) or use default
+OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://localhost:11434")
+
 # Calculate project root
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -59,7 +62,10 @@ def run_ingest():
 
     # Generate embeddings
     print("🧠 Generating embeddings...")
-    embeddings = OllamaEmbeddings(model="nomic-embed-text")
+    embeddings = OllamaEmbeddings(
+        model="nomic-embed-text",
+        base_url=OLLAMA_HOST if OLLAMA_HOST.startswith("http") else f"http://{OLLAMA_HOST}"
+    )
 
     # Remove old vectorstore
     if os.path.exists(VECTORSTORE_FOLDER):

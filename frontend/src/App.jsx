@@ -194,7 +194,7 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="h-screen flex flex-col overflow-hidden">
       {/* Notification */}
       {notification && (
         <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg ${
@@ -230,9 +230,9 @@ function App() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 flex max-w-6xl mx-auto w-full">
+      <main className="flex-1 flex max-w-6xl mx-auto w-full overflow-hidden">
         {/* Sidebar - Document Management */}
-        <aside className="w-80 border-r border-ink-800/50 p-6 flex flex-col">
+        <aside className="w-80 border-r border-ink-800/50 p-6 flex flex-col overflow-hidden">
           <div className="mb-6">
             <h2 className="text-sm font-medium text-ink-300 uppercase tracking-wider mb-4">
               Documents

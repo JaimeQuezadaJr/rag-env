@@ -86,11 +86,8 @@ function App() {
       const data = await res.json()
       
       if (data.success) {
+        setIsReady(true)
         showNotification(`Processed ${data.chunks} chunks from ${data.loaded.length} PDFs`)
-        // Show "Ready to chat" status after notification appears
-        setTimeout(() => {
-          setIsReady(true)
-        }, 6000)
       } else {
         showNotification(data.message, 'error')
       }
@@ -117,11 +114,8 @@ function App() {
       
       // Check if ingestion was successful
       if (data.ingestion && data.ingestion.success) {
+        setIsReady(true)
         showNotification(`Deleted ${filename} and rebuilt vectorstore`)
-        // Show "Ready to chat" status after notification appears
-        setTimeout(() => {
-          setIsReady(true)
-        }, 6000)
       } else {
         setIsReady(false)
         showNotification(`Deleted ${filename}`, 'error')

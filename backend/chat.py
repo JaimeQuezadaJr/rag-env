@@ -1,7 +1,13 @@
 # backend/chat.py
 
-import subprocess
+import os
+import requests
 from query import query_documents
+
+# Get Ollama host from environment (for Docker) or use default
+OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://localhost:11434")
+if not OLLAMA_HOST.startswith("http"):
+    OLLAMA_HOST = f"http://{OLLAMA_HOST}"
 
 SYSTEM_PROMPT = """You are a helpful AI assistant that answers questions based on the provided document context.
 
@@ -32,16 +38,17 @@ Please answer the question based on the context above."""
 
 
 def generate_response(prompt: str, model: str = "gemma3:4b") -> str:
-    """Generate response using Ollama"""
-    process = subprocess.Popen(
-        ["ollama", "run", model],
-        stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True,
-    )
-    out, err = process.communicate(prompt)
-    return out.strip()
+    """Generate response using Ollama API"""
+    try:
+        response = requests.post(
+            f"{OLLAMA_HOST}/api/generate",
+            json={"model": model, "prompt": prompt, "stream": False},
+            timeout=120,
+        )
+        response.raise_for_status()
+        return response.json().get("response", "").strip()
+    except Exception as e:
+        return f"Error generating response: {str(e)}"
 
 
 def chat(question: str, model: str = "gemma3:4b", top_k: int = 4) -> dict:

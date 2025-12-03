@@ -57,14 +57,18 @@ def run_ingest():
 
     # Split into chunks
     print("✂️ Splitting documents...")
-    splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=80)
+    # Larger chunks (1000 chars) for better context, especially for resume/document analysis
+    # Overlap of 200 prevents splitting related information
+    splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
     chunks = splitter.split_documents(all_documents)
 
     # Generate embeddings
     print("🧠 Generating embeddings...")
     embeddings = OllamaEmbeddings(
         model="nomic-embed-text",
-        base_url=OLLAMA_HOST if OLLAMA_HOST.startswith("http") else f"http://{OLLAMA_HOST}"
+        base_url=(
+            OLLAMA_HOST if OLLAMA_HOST.startswith("http") else f"http://{OLLAMA_HOST}"
+        ),
     )
 
     # Remove old vectorstore

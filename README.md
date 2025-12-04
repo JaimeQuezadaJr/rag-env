@@ -36,13 +36,15 @@ rag-env/
 - Node.js 18+
 - [Ollama](https://ollama.ai) installed locally
 
+> **Note for Docker users**: Allocate at least 6GB of memory to Docker Desktop (Settings → Resources → Advanced) for smooth operation.
+
 ### Install Ollama Models
 
 ```bash
 # Embedding model (required)
 ollama pull nomic-embed-text
 
-# Chat model (choose one)
+# Chat model
 ollama pull gemma3:4b
 ```
 
@@ -108,3 +110,60 @@ The app will be available at `http://localhost:5173`
 - React + Vite
 - Tailwind CSS
 - Lucide Icons
+
+## Docker Setup
+
+Run the entire application using Docker - includes Ollama and all dependencies.
+
+### Quick Start:
+
+1. **Navigate to project directory:**
+   ```bash
+   cd /path/to/rag-env
+   ```
+
+2. **Build and start all services:**
+   ```bash
+   docker-compose up --build
+   ```
+
+3. **Access the application:**
+   - Frontend: http://localhost:3000
+   - Backend API: http://localhost:8000
+   - API Docs: http://localhost:8000/docs
+
+### First Run:
+
+On first startup, the system will automatically download and set up:
+- Ollama server
+- Required models (`nomic-embed-text` and `gemma3:4b`)
+
+**First run takes 5-10 minutes** to download models (~3-4GB). Subsequent runs are fast.
+
+### Docker Commands:
+
+```bash
+# Start in background
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop containers
+docker-compose down
+
+# Rebuild after code changes
+docker-compose up --build
+
+# Remove everything (including models)
+docker-compose down -v
+```
+
+### Memory Configuration:
+
+1. Open Docker Desktop
+2. Go to **Settings** → **Resources** → **Advanced**
+3. Set **Memory** to at least **6GB** (8GB+ recommended)
+4. Click **Apply & Restart**
+
+See [DOCKER.md](./DOCKER.md) for detailed Docker documentation.

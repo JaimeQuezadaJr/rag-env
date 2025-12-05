@@ -1,6 +1,6 @@
 # DocChat — AI Document Assistant
 
-A RAG (Retrieval-Augmented Generation) application that lets you chat with your PDF documents using local LLMs.
+A RAG (Retrieval-Augmented Generation) application that allows you to upload PDF documents while using local LLMs for information retrieval. Built with FastAPI, React, LangChain, and FAISS for efficient document embedding and vector similarity search.
 
 ## Features
 

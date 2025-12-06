@@ -19,7 +19,7 @@ def load_vectorstore():
         return None
 
     embeddings = OllamaEmbeddings(
-        model="nomic-embed-text",
+        model="mxbai-embed-large",
         base_url=OLLAMA_HOST if OLLAMA_HOST.startswith("http") else f"http://{OLLAMA_HOST}"
     )
     vectorstore = FAISS.load_local(

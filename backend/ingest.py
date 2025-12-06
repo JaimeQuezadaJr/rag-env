@@ -65,7 +65,7 @@ def run_ingest():
     # Generate embeddings
     print("🧠 Generating embeddings...")
     embeddings = OllamaEmbeddings(
-        model="nomic-embed-text",
+        model="mxbai-embed-large",
         base_url=(
             OLLAMA_HOST if OLLAMA_HOST.startswith("http") else f"http://{OLLAMA_HOST}"
         ),

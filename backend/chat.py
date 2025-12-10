@@ -37,7 +37,7 @@ USER QUESTION:
 Please answer the question based on the context above."""
 
 
-def generate_response(prompt: str, model: str = "gpt-oss:20b") -> str:
+def generate_response(prompt: str, model: str = "qwen3:4b") -> str:
     """Generate response using Ollama API"""
     try:
         response = requests.post(
@@ -51,7 +51,7 @@ def generate_response(prompt: str, model: str = "gpt-oss:20b") -> str:
         return f"Error generating response: {str(e)}"
 
 
-def chat(question: str, model: str = "gpt-oss:20b", top_k: int = 4) -> dict:
+def chat(question: str, model: str = "qwen3:4b", top_k: int = 4) -> dict:
     """Main chat function - retrieves context and generates response"""
     # Retrieve relevant chunks
     chunks = query_documents(question, top_k=top_k)

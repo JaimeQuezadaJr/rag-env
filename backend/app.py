@@ -36,7 +36,7 @@ app.add_middleware(
 
 class ChatRequest(BaseModel):
     message: str
-    model: str = "qwen3:4b"
+    model: str = "qwen3:1.7b"
 
 
 class ChatResponse(BaseModel):

@@ -36,7 +36,7 @@ app.add_middleware(
 
 class ChatRequest(BaseModel):
     message: str
-    model: str = "qwen3:1.7b"
+    model: str = "gpt-oss:20b"
 
 
 class ChatResponse(BaseModel):

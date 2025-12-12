@@ -20,6 +20,9 @@ VECTORSTORE_FOLDER = os.path.join(ROOT_DIR, "vectorstore")
 def run_ingest():
     print("\n🔄 Running ingestion...")
 
+    # Ensure PDF folder exists
+    os.makedirs(PDF_FOLDER, exist_ok=True)
+
     pdf_files = [f for f in os.listdir(PDF_FOLDER) if f.endswith(".pdf")]
 
     if not pdf_files:

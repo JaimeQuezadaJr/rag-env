@@ -12,6 +12,9 @@ ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Full absolute path to pdf_inputs folder
 WATCH_PATH = os.path.join(ROOT_DIR, "pdf_inputs")
 
+# Ensure PDF folder exists
+os.makedirs(WATCH_PATH, exist_ok=True)
+
 class PDFWatcher(FileSystemEventHandler):
     def on_any_event(self, event):
         # Only process PDF files and relevant events (created, deleted, modified, moved)

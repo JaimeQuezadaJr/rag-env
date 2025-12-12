@@ -1,5 +1,5 @@
 __pycache__/
 .DS_Store
 node_modules/
-pdf_inputs/
+pdf_inputs/*
 .env

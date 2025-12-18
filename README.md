@@ -111,6 +111,48 @@ The app will be available at `http://localhost:5173`
 - Tailwind CSS
 - Lucide Icons
 
+## What I Learned
+
+Building this RAG application provided valuable insights into several key areas:
+
+### RAG Architecture
+- **Retrieval-Augmented Generation**: Understanding how to combine vector search with LLM generation to provide accurate, context-aware responses
+- **Embedding Models**: Learning the difference between embedding models (for semantic search) and chat models (for text generation)
+- **Chunking Strategies**: Experimenting with chunk sizes and overlap to balance context preservation and retrieval accuracy
+
+### Document Processing
+- **PDF Handling**: Implementing robust PDF loading with fallback mechanisms (`PyPDFLoader` → `PyMuPDFLoader`) to handle various PDF formats
+- **Text Extraction**: Dealing with malformed PDFs and understanding parser warnings vs. actual errors
+- **File System Watching**: Building automatic ingestion pipelines using `watchdog` to monitor directory changes
+
+### Vector Databases & Search
+- **FAISS**: Working with Facebook's AI Similarity Search library for efficient vector storage and retrieval
+- **Similarity Search**: Understanding cosine similarity and how to retrieve the most relevant document chunks
+- **Vector Store Management**: Learning to rebuild and update vector stores when documents are added or removed
+
+### Full-Stack Development
+- **API Design**: Building RESTful APIs with FastAPI, including file uploads, CORS handling, and error responses
+- **Frontend Integration**: Connecting React frontend to Python backend, handling async operations, and managing application state
+- **User Experience**: Implementing loading states, notifications, and markdown rendering for better UX
+
+### Docker & Containerization
+- **Multi-Container Applications**: Orchestrating multiple services (backend, frontend, Ollama) with Docker Compose
+- **Nginx Configuration**: Setting up reverse proxies, static file serving, and handling SPA routing
+- **Resource Management**: Understanding memory requirements for LLMs and optimizing Docker resource allocation
+- **Entrypoint Scripts**: Automating model downloads and service initialization in containers
+
+### LLM Integration
+- **Local LLMs**: Working with Ollama to run models locally without cloud dependencies
+- **Model Selection**: Understanding trade-offs between model size, accuracy, and resource requirements
+- **Prompt Engineering**: Crafting system prompts and context-aware prompts for better RAG responses
+- **Timeout Handling**: Managing long-running LLM inference requests with appropriate timeout configurations
+
+### Development Best Practices
+- **Error Handling**: Implementing robust error handling with fallbacks and user-friendly error messages
+- **Environment Management**: Using virtual environments, `.gitignore`, and environment variables effectively
+- **Code Organization**: Structuring projects with clear separation between scripts, backend, and frontend
+- **Documentation**: Writing comprehensive READMEs and setup guides for reproducibility
+
 ## Docker Setup
 
 Run the entire application using Docker - includes Ollama and all dependencies.

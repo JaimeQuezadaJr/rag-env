@@ -10,6 +10,17 @@ A RAG (Retrieval-Augmented Generation) application that allows you to upload PDF
 - 🔍 Source citations for answers
 - ⚡ Fast vector search with FAISS
 
+## What I Learned
+
+Key insights from building this RAG application:
+
+- **RAG Architecture**: Combining vector search with LLM generation, understanding embedding vs. chat models, and optimizing chunk sizes for context preservation
+- **Document Processing**: Robust PDF handling with fallback mechanisms (`PyPDFLoader` → `PyMuPDFLoader`) and automated ingestion using file system watchers
+- **Vector Search**: Working with FAISS for efficient similarity search and managing vector store updates when documents change
+- **Full-Stack Integration**: Building RESTful APIs with FastAPI, connecting React frontends, and implementing proper error handling and UX patterns
+- **Docker & Containerization**: Orchestrating multi-container applications with Docker Compose, configuring Nginx for reverse proxying, and managing LLM memory requirements
+- **Local LLMs**: Running models locally with Ollama, understanding model size/accuracy trade-offs, and crafting effective prompts for RAG responses
+
 ## Project Structure
 
 ```
@@ -110,17 +121,6 @@ The app will be available at `http://localhost:5173`
 - React + Vite
 - Tailwind CSS
 - Lucide Icons
-
-## What I Learned
-
-Key insights from building this RAG application:
-
-- **RAG Architecture**: Combining vector search with LLM generation, understanding embedding vs. chat models, and optimizing chunk sizes for context preservation
-- **Document Processing**: Robust PDF handling with fallback mechanisms (`PyPDFLoader` → `PyMuPDFLoader`) and automated ingestion using file system watchers
-- **Vector Search**: Working with FAISS for efficient similarity search and managing vector store updates when documents change
-- **Full-Stack Integration**: Building RESTful APIs with FastAPI, connecting React frontends, and implementing proper error handling and UX patterns
-- **Docker & Containerization**: Orchestrating multi-container applications with Docker Compose, configuring Nginx for reverse proxying, and managing LLM memory requirements
-- **Local LLMs**: Running models locally with Ollama, understanding model size/accuracy trade-offs, and crafting effective prompts for RAG responses
 
 ## Docker Setup
 
